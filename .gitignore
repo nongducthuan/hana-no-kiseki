@@ -1,0 +1,23 @@
+# Hệ điều hành
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+*.stackdump
+[Dd]esktop.ini
+.DS_Store
+
+# Editor & IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# File và thư mục backup tạm thời
+*.bak
+*.old
+*backup*/
+old_backup/
+
+# Logs
+*.log
