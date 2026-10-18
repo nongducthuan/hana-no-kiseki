@@ -7,4 +7,4 @@ echo.
 echo Dang khoi dong game tren trinh duyet...
 start "" "%~dp0index.html"
 echo Game da duoc mo! Chuc ban choi game vui ve!
-timeout /t 3 >nul
+ping 127.0.0.1 -n 2 >nul

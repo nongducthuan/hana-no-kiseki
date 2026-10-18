@@ -624,17 +624,17 @@
     #ending-screen {
       position: absolute;
       inset: 0;
-      background: radial-gradient(circle at 50% 50%, rgba(25, 12, 45, 0.95) 0%, rgba(10, 4, 20, 0.99) 100%);
+      background: radial-gradient(circle at 50% 50%, rgba(25, 12, 45, 0.92) 0%, rgba(10, 4, 20, 0.98) 100%);
       z-index: 150;
       display: flex;
-      flex-direction: column;
       align-items: center;
       justify-content: center;
-      text-align: center;
       padding: 30px;
       opacity: 0;
       pointer-events: none;
       transition: opacity 0.8s ease;
+      overflow: hidden;
+      gap: 30px;
     }
 
     #ending-screen.active {
@@ -642,14 +642,59 @@
       pointer-events: auto;
     }
 
+    #ending-bg-layer {
+      position: absolute;
+      inset: 0;
+      background-size: cover;
+      background-position: center;
+      filter: blur(5px) brightness(0.4);
+      z-index: 1;
+      transform: scale(1.05);
+    }
+
+    #ending-char-showcase {
+      position: relative;
+      z-index: 2;
+      height: 85vh;
+      max-height: 820px;
+      display: flex;
+      align-items: flex-end;
+      filter: drop-shadow(0 0 35px rgba(244, 114, 182, 0.5));
+      animation: floatHeroine 3.5s ease-in-out infinite alternate;
+    }
+
+    @keyframes floatHeroine {
+      0% { transform: translateY(0); }
+      100% { transform: translateY(-10px); }
+    }
+
+    #ending-char-img {
+      height: 100%;
+      width: auto;
+      object-fit: contain;
+    }
+
+    #ending-card {
+      position: relative;
+      z-index: 3;
+      background: linear-gradient(135deg, rgba(20, 10, 40, 0.92) 0%, rgba(35, 15, 60, 0.95) 100%);
+      backdrop-filter: blur(20px);
+      border: 1.5px solid rgba(244, 114, 182, 0.45);
+      border-radius: 28px;
+      padding: 36px 44px;
+      max-width: 580px;
+      text-align: center;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8), 0 0 40px rgba(236, 72, 153, 0.3);
+    }
+
     .ending-badge {
       font-size: 48px;
-      margin-bottom: 14px;
+      margin-bottom: 12px;
       animation: promptBounce 1.5s infinite;
     }
 
     .ending-title {
-      font-size: 34px;
+      font-size: 32px;
       font-weight: 800;
       color: #fbcfe8;
       margin-bottom: 12px;
@@ -657,11 +702,32 @@
     }
 
     .ending-desc {
-      font-size: 17px;
+      font-size: 16.5px;
       line-height: 1.8;
       color: #e9d5ff;
-      max-width: 620px;
-      margin-bottom: 30px;
+      max-width: 540px;
+      margin-bottom: 26px;
+    }
+
+    /* Character Talking / Lip-Sync animation */
+    .char-container.talking .char-img {
+      animation: charTalk 0.22s ease-in-out infinite alternate !important;
+    }
+    @keyframes charTalk {
+      0% { transform: translateY(0) scaleY(1); }
+      100% { transform: translateY(-4px) scaleY(1.008); }
+    }
+
+    /* Vinyl spinning for Music Room */
+    .vinyl-spinning {
+      animation: spinVinyl 4s linear infinite;
+    }
+    .vinyl-paused {
+      animation-play-state: paused;
+    }
+    @keyframes spinVinyl {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
     }
 
     /* Toast Notification */

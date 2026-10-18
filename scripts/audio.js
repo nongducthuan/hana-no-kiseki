@@ -15,7 +15,7 @@ const BGM_TRACKS = {
   spring:   'assets/audio/bgm/spring.mp3',
   sunset:   'assets/audio/bgm/sunset.wav',
   tsundere: 'assets/audio/bgm/tsundere.mp3',
-  romance:  'assets/audio/bgm/sunset.wav'
+  romance:  'assets/audio/bgm/romance.wav'
 };
 
 function initAudio() {

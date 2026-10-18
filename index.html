@@ -16,6 +16,10 @@
 
 <!-- ===== TITLE SCREEN ===== -->
 <div id="title-screen" style="background-image: url('assets/bg/school_gate.png');">
+  <div style="position: absolute; top: 20px; right: 24px; z-index: 110;">
+    <button class="nav-btn" onclick="toggleLanguage()" id="title-lang-btn">🌐 Tiếng Việt</button>
+  </div>
+
   <div class="title-logo-container">
     <div class="jp-title">花の奇跡</div>
     <h1 class="main-title">Hana no Kiseki</h1>
@@ -24,16 +28,19 @@
 
   <div class="title-menu">
     <button class="title-btn" onclick="startGame()">
-      <span>🌸</span> <span>Bắt Đầu Game</span>
+      <span>🌸</span> <span id="txt-start">Bắt Đầu Game</span>
     </button>
     <button class="title-btn" onclick="openModal('load')">
-      <span>📂</span> <span>Tải Game</span>
+      <span>📂</span> <span id="txt-load">Tải Game</span>
     </button>
     <button class="title-btn" onclick="showGallery()">
-      <span>🏆</span> <span>Bộ Sưu Tập Ending</span>
+      <span>🏆</span> <span id="txt-gallery">Bộ Sưu Tập Ending</span>
+    </button>
+    <button class="title-btn" onclick="openMusicRoom()">
+      <span>🎵</span> <span id="txt-music">Phòng Nghe Nhạc</span>
     </button>
     <button class="title-btn" onclick="openSettings()">
-      <span>⚙️</span> <span>Cài Đặt</span>
+      <span>⚙️</span> <span id="txt-settings">Cài Đặt</span>
     </button>
   </div>
 
@@ -66,11 +73,12 @@
     </div>
 
     <div class="top-bar-interactive">
-      <button class="nav-btn" onclick="openBacklog()">📜 Lịch Sử</button>
+      <button class="nav-btn" onclick="openBacklog()" id="nav-backlog">📜 Lịch Sử</button>
       <button class="nav-btn" onclick="toggleAuto()" id="auto-btn">⚡ Tự Động</button>
       <button class="nav-btn" onclick="toggleSkip()" id="skip-btn">⏩ Bỏ Qua</button>
-      <button class="nav-btn" onclick="openSettings()">⚙️ Cài Đặt</button>
-      <button class="nav-btn" onclick="returnToTitle()">🏠 Menu</button>
+      <button class="nav-btn" onclick="toggleLanguage()" id="lang-btn">🌐 VI</button>
+      <button class="nav-btn" onclick="openSettings()" id="nav-settings">⚙️ Cài Đặt</button>
+      <button class="nav-btn" onclick="returnToTitle()" id="nav-menu">🏠 Menu</button>
     </div>
   </div>
 
@@ -102,7 +110,7 @@
 
     <!-- Choices Modal -->
     <div id="choices-overlay" class="hidden">
-      <div class="choice-header">— Lựa Chọn Của Bạn —</div>
+      <div class="choice-header" id="txt-choice-header">— Lựa Chọn Của Bạn —</div>
       <div id="choices-container" style="display:flex; flex-direction:column; gap:12px; width:100%; max-width:560px;"></div>
     </div>
   </div>
@@ -122,7 +130,7 @@
         </div>
         <div id="dialogue-text"></div>
         <div id="dialogue-prompt">
-          <span>Click để tiếp tục</span>
+          <span id="txt-prompt-click">Click để tiếp tục</span>
           <span>▼</span>
         </div>
       </div>
@@ -133,10 +141,10 @@
         <button class="tool-btn" onclick="quickLoad()">Q.Load</button>
         <button class="tool-btn" onclick="openModal('save')">Save</button>
         <button class="tool-btn" onclick="openModal('load')">Load</button>
-        <button class="tool-btn" onclick="openBacklog()">Log</button>
+        <button class="tool-btn" onclick="openBacklog()" id="quick-log-btn">Log</button>
         <button class="tool-btn" onclick="toggleAuto()" id="sub-auto-btn">Auto</button>
         <button class="tool-btn" onclick="toggleSkip()" id="sub-skip-btn">Skip</button>
-        <button class="tool-btn" onclick="toggleHideUI()">Ẩn UI</button>
+        <button class="tool-btn" onclick="toggleHideUI()" id="quick-hide-btn">Ẩn UI</button>
       </div>
     </div>
   </div>
@@ -144,15 +152,21 @@
   <div id="unhide-hint" onclick="toggleHideUI()">Click chuột phải hoặc click vào đây để hiện UI</div>
 </div>
 
-<!-- ===== ENDING SCREEN ===== -->
+<!-- ===== GRAND ENDING SCREEN ===== -->
 <div id="ending-screen">
-  <div class="ending-badge" id="ending-badge">🌸</div>
-  <h2 class="ending-title" id="ending-title">Good Ending</h2>
-  <div id="ending-hearts" style="font-size: 22px; margin-bottom: 14px;">💖💖💖💖💖</div>
-  <p class="ending-desc" id="ending-desc"></p>
-  <button class="title-btn" style="width: 220px;" onclick="returnToTitle()">
-    <span>🌸</span> <span>Về Màn Hình Chính</span>
-  </button>
+  <div id="ending-bg-layer"></div>
+  <div id="ending-char-showcase">
+    <img id="ending-char-img" src="assets/char/hana_blush.png" alt="Ending Heroine">
+  </div>
+  <div id="ending-card">
+    <div class="ending-badge" id="ending-badge">🌸</div>
+    <h2 class="ending-title" id="ending-title">Good Ending</h2>
+    <div id="ending-hearts" style="font-size: 22px; margin-bottom: 12px;">💖💖💖💖💖</div>
+    <p class="ending-desc" id="ending-desc"></p>
+    <button class="title-btn" style="width: 240px; margin: 0 auto;" onclick="returnToTitle()">
+      <span>🌸</span> <span id="txt-return-title">Về Màn Hình Chính</span>
+    </button>
+  </div>
 </div>
 
 <!-- ===== SAVE/LOAD MODAL ===== -->
@@ -214,6 +228,27 @@
   </div>
 </div>
 
+<!-- ===== MUSIC ROOM MODAL ===== -->
+<div id="music-modal" class="app-modal hidden">
+  <div class="modal-box" style="width: 640px; max-width: 92%;">
+    <h3 style="font-size: 22px; font-weight: 800; color: #f472b6; text-align: center; margin-bottom: 6px;">🎵 Phòng Nghe Nhạc (Music Room)</h3>
+    <p style="text-align: center; font-size: 13px; color: #d8b4fe; margin-bottom: 18px;">Thưởng thức các bản nhạc nền chính thức của Hana no Kiseki</p>
+    
+    <div id="music-now-playing" style="display: flex; align-items: center; gap: 16px; background: rgba(25, 12, 45, 0.7); border: 1px solid rgba(244, 114, 182, 0.4); border-radius: 16px; padding: 14px 20px; margin-bottom: 16px;">
+      <div id="vinyl-disc" class="vinyl-spinning" style="width: 50px; height: 50px; border-radius: 50%; background: radial-gradient(circle, #ec4899 20%, #1e1136 21%, #1e1136 40%, #a855f7 41%, #1e1136 42%, #000 70%); box-shadow: 0 0 15px rgba(236,72,153,0.5); flex-shrink: 0;"></div>
+      <div style="flex: 1;">
+        <div style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: #f472b6; font-weight: 700;">Đang phát</div>
+        <div id="music-current-title" style="font-size: 15px; font-weight: 700; color: #fff;">Chưa chọn bài hát</div>
+      </div>
+      <button class="nav-btn" id="music-play-pause-btn" onclick="toggleMusicRoomPlayback()" style="padding: 8px 16px;">⏸️ Tạm Dừng</button>
+    </div>
+
+    <div id="music-track-list" style="display: flex; flex-direction: column; gap: 10px; max-height: 40vh; overflow-y: auto; padding-right: 6px;"></div>
+
+    <button class="nav-btn" style="width: 100%; justify-content: center; margin-top: 18px; padding: 10px;" onclick="closeMusicRoom()">✕ Đóng</button>
+  </div>
+</div>
+
 <!-- TOAST -->
 <div id="toast"></div>
 
@@ -223,6 +258,7 @@
 
   <!-- MODULAR GAME SCRIPTS -->
   <script src="data/story.js"></script>
+  <script src="data/story_translations.js"></script>
   <script src="scripts/audio.js"></script>
   <script src="scripts/sakura.js"></script>
   <script src="scripts/engine.js"></script>

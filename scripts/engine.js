@@ -29,8 +29,77 @@ let autoTimer = null;
 let chapterTimer = null;
 
 // =============================================
+//  STORYLINE & DIALOGUE LOCALIZATION HELPERS
+// =============================================
 
+function getLocalizedSpeaker(speakerKey, defaultName) {
+  if (typeof CHAR_NAMES_I18N !== 'undefined' && typeof currentLang !== 'undefined' && CHAR_NAMES_I18N[currentLang]) {
+    return CHAR_NAMES_I18N[currentLang][speakerKey] || defaultName;
+  }
+  return defaultName;
+}
 
+function getLocalizedLineText(nodeId, lineIndex, defaultText) {
+  if (typeof currentLang === 'undefined' || currentLang === 'vi') return defaultText;
+  if (typeof STORY_TRANSLATIONS !== 'undefined' && STORY_TRANSLATIONS[currentLang]) {
+    const nodeTrans = STORY_TRANSLATIONS[currentLang][nodeId];
+    if (nodeTrans && nodeTrans.lines && nodeTrans.lines[lineIndex]) {
+      return nodeTrans.lines[lineIndex];
+    }
+  }
+  return defaultText;
+}
+
+function getLocalizedChoiceText(nodeId, choiceIndex, defaultText) {
+  if (typeof currentLang === 'undefined' || currentLang === 'vi') return defaultText;
+  if (typeof STORY_TRANSLATIONS !== 'undefined' && STORY_TRANSLATIONS[currentLang]) {
+    const nodeTrans = STORY_TRANSLATIONS[currentLang][nodeId];
+    if (nodeTrans && nodeTrans.choices && nodeTrans.choices[choiceIndex]) {
+      return nodeTrans.choices[choiceIndex];
+    }
+  }
+  return defaultText;
+}
+
+function getLocalizedChapter(nodeId, defaultChap) {
+  if (typeof currentLang === 'undefined' || currentLang === 'vi') return defaultChap;
+  if (typeof STORY_TRANSLATIONS !== 'undefined' && STORY_TRANSLATIONS[currentLang]) {
+    const nodeTrans = STORY_TRANSLATIONS[currentLang][nodeId];
+    if (nodeTrans && nodeTrans.chapter) return nodeTrans.chapter;
+  }
+  return defaultChap;
+}
+
+function getLocalizedEnding(node) {
+  if (typeof currentLang === 'undefined' || currentLang === 'vi') return { title: node.title, desc: node.desc };
+  if (typeof STORY_TRANSLATIONS !== 'undefined' && STORY_TRANSLATIONS[currentLang]) {
+    const nodeTrans = STORY_TRANSLATIONS[currentLang][state.node];
+    if (nodeTrans && nodeTrans.ending) {
+      return { title: nodeTrans.ending.title || node.title, desc: nodeTrans.ending.desc || node.desc };
+    }
+  }
+  return { title: node.title, desc: node.desc };
+}
+
+function getLocalizedEndingTitle(key, defaultTitle) {
+  if (typeof currentLang === 'undefined' || currentLang === 'vi') return defaultTitle;
+  if (typeof STORY_TRANSLATIONS !== 'undefined' && STORY_TRANSLATIONS[currentLang]) {
+    const nodeTrans = STORY_TRANSLATIONS[currentLang]['ending_' + key] || STORY_TRANSLATIONS[currentLang][key];
+    if (nodeTrans && nodeTrans.ending && nodeTrans.ending.title) return nodeTrans.ending.title;
+  }
+  return defaultTitle;
+}
+
+function getLocalizedEndingDesc(key, defaultDesc) {
+  if (typeof currentLang === 'undefined' || currentLang === 'vi') return defaultDesc;
+  if (typeof STORY_TRANSLATIONS !== 'undefined' && STORY_TRANSLATIONS[currentLang]) {
+    const nodeTrans = STORY_TRANSLATIONS[currentLang]['ending_' + key] || STORY_TRANSLATIONS[currentLang][key];
+    if (nodeTrans && nodeTrans.ending && nodeTrans.ending.desc) return nodeTrans.ending.desc;
+  }
+  return defaultDesc;
+}
+
+// =============================================
 //  GAME FLOW & NODE LOADER
 // =============================================
 
@@ -88,8 +157,9 @@ function fadeTransition(fn) {
 
 function showChapterBanner(chap) {
   const banner = document.getElementById('chapter-banner');
-  document.getElementById('chap-title').textContent = chap.title;
-  document.getElementById('chap-subtitle').textContent = chap.subtitle;
+  const locChap = getLocalizedChapter(state.node, chap);
+  document.getElementById('chap-title').textContent = locChap.title;
+  document.getElementById('chap-subtitle').textContent = locChap.subtitle;
   banner.classList.add('active');
   clearTimeout(chapterTimer);
   chapterTimer = setTimeout(() => {
@@ -145,9 +215,11 @@ function loadNode(nodeId) {
           charEl.classList.remove('hidden');
           charEl.classList.add('visible');
 
-          if (node.charExpr && ASSETS.char[node.charExpr]) {
-            const imgEl = charEl.querySelector('.char-img');
-            if (imgEl) imgEl.src = ASSETS.char[node.charExpr];
+          const imgEl = charEl.querySelector('.char-img');
+          if (imgEl) {
+            const defaultExpr = node.showChar + '_normal';
+            const exprKey = (node.charExpr && ASSETS.char[node.charExpr]) ? node.charExpr : defaultExpr;
+            if (ASSETS.char[exprKey]) imgEl.src = ASSETS.char[exprKey];
           }
         }
       }
@@ -183,13 +255,15 @@ function showNextLine() {
 
   const line = node.lines[state.lineIndex];
   const char = CHAR_INFO[line.speaker] || CHAR_INFO.narrator;
+  const speakerName = getLocalizedSpeaker(line.speaker, char.name);
+  const localizedText = getLocalizedLineText(state.node, state.lineIndex, line.text);
 
   // Add to backlog
-  state.backlog.push({ speaker: char.name, text: line.text, icon: char.icon });
+  state.backlog.push({ speaker: speakerName, text: localizedText, icon: char.icon });
 
   // Update Name Tag & Avatar
   document.getElementById('name-icon').textContent = char.icon || '💬';
-  document.getElementById('name-text').textContent = char.name;
+  document.getElementById('name-text').textContent = speakerName;
 
   const avatarCont = document.getElementById('dialogue-avatar-container');
   const avatarImg = document.getElementById('dialogue-avatar');
@@ -231,7 +305,7 @@ function showNextLine() {
     setTimeout(() => gameEl.classList.remove('screen-shake'), 420);
   }
 
-  typeWriter(line.text);
+  typeWriter(localizedText);
   state.lineIndex++;
 }
 
@@ -240,6 +314,9 @@ function typeWriter(fullText) {
   textEl.textContent = '';
   state.isTyping = true;
   let idx = 0;
+
+  const activeChar = document.querySelector('.char-container.visible');
+  if (activeChar) activeChar.classList.add('talking');
 
   clearTimeout(autoTimer);
   clearInterval(typewriterTimer);
@@ -254,12 +331,14 @@ function typeWriter(fullText) {
     if (idx >= fullText.length) {
       clearInterval(typewriterTimer);
       state.isTyping = false;
+      document.querySelectorAll('.char-container').forEach(c => c.classList.remove('talking'));
       handleLineComplete();
     }
   }, speed);
 }
 
 function handleLineComplete() {
+  document.querySelectorAll('.char-container').forEach(c => c.classList.remove('talking'));
   if (state.isSkip) {
     setTimeout(advanceDialogue, 80);
   } else if (state.isAuto) {
@@ -278,6 +357,7 @@ function advanceDialogue() {
   if (state.isTyping) {
     clearInterval(typewriterTimer);
     state.isTyping = false;
+    document.querySelectorAll('.char-container').forEach(c => c.classList.remove('talking'));
     const node = STORY[state.node];
     if (node && node.lines && node.lines[state.lineIndex - 1]) {
       document.getElementById('dialogue-text').textContent = node.lines[state.lineIndex - 1].text;
@@ -305,10 +385,11 @@ function showChoices(choices) {
   const container = document.getElementById('choices-container');
   container.innerHTML = '';
 
-  choices.forEach((choice) => {
+  choices.forEach((choice, idx) => {
+    const choiceText = getLocalizedChoiceText(state.node, idx, choice.text);
     const btn = document.createElement('button');
     btn.className = 'choice-btn';
-    btn.innerHTML = `<span style="color:#f472b6; font-size:18px;">◈</span> <span>${choice.text}</span>`;
+    btn.innerHTML = `<span style="color:#f472b6; font-size:18px;">◈</span> <span>${choiceText}</span>`;
     btn.onclick = () => selectChoice(choice);
     container.appendChild(btn);
   });
@@ -655,19 +736,131 @@ function showEnding(node) {
     updateTrophyCount();
   }
 
+  // Showcase heroine sprite and background
+  const showcaseMap = {
+    hana_good:   { sprite: 'assets/char/hana_blush.png', bg: 'assets/bg/school_gate.png', bgm: 'romance' },
+    hana_normal: { sprite: 'assets/char/hana_smile.png', bg: 'assets/bg/classroom.png', bgm: 'spring' },
+    yuki_good:   { sprite: 'assets/char/yuki_smile.png', bg: 'assets/bg/rooftop_sunset.png', bgm: 'romance' },
+    yuki_normal: { sprite: 'assets/char/yuki_normal.png', bg: 'assets/bg/rooftop_sunset.png', bgm: 'sunset' },
+    rin_good:    { sprite: 'assets/char/rin_blush.png', bg: 'assets/bg/student_council.png', bgm: 'romance' },
+    rin_normal:  { sprite: 'assets/char/rin_smile.png', bg: 'assets/bg/student_council.png', bgm: 'tsundere' },
+    harem:       { sprite: 'assets/char/hana_smile.png', bg: 'assets/bg/school_gate.png', bgm: 'spring' },
+    alone:       { sprite: null, bg: 'assets/bg/corridor.jpg', bgm: 'sunset' }
+  };
+
+  const meta = showcaseMap[node.endingKey] || { sprite: 'assets/char/hana_smile.png', bg: 'assets/bg/school_gate.png', bgm: 'romance' };
+  
+  if (meta.bgm && typeof switchBgm === 'function') {
+    switchBgm(meta.bgm);
+  }
+
+  const bgEl = document.getElementById('ending-bg-layer');
+  if (bgEl) bgEl.style.backgroundImage = `url('${meta.bg}')`;
+
+  const showcaseEl = document.getElementById('ending-char-showcase');
+  const imgEl = document.getElementById('ending-char-img');
+  if (showcaseEl && imgEl) {
+    if (meta.sprite) {
+      imgEl.src = meta.sprite;
+      showcaseEl.style.display = 'flex';
+    } else {
+      showcaseEl.style.display = 'none';
+    }
+  }
+
+  const locEnding = getLocalizedEnding(node);
   const endScreen = document.getElementById('ending-screen');
   document.getElementById('ending-badge').textContent = node.badge || '🌸';
-  document.getElementById('ending-title').textContent = node.title;
-  document.getElementById('ending-desc').textContent = node.desc;
+  document.getElementById('ending-title').textContent = locEnding.title;
+  document.getElementById('ending-desc').textContent = locEnding.desc;
   document.getElementById('ending-hearts').textContent = node.hearts;
 
   endScreen.classList.add('active');
 }
 
+// =============================================
+//  LOCALIZATION ENGINE (VI / EN / JA)
+// =============================================
+
+var currentLang = 'vi';
+
+const I18N = {
+  vi: {
+    code: 'vi',
+    lang: '🌐 VI',
+    langFull: '🌐 Tiếng Việt',
+    toastSwitch: '🇻🇳 Đã chuyển sang Tiếng Việt',
+    start: 'Bắt Đầu Game',
+    load: 'Tải Game',
+    gallery: 'Bộ Sưu Tập Ending',
+    music: 'Phòng Nghe Nhạc',
+    settings: 'Cài Đặt',
+    backlog: '📜 Lịch Sử',
+    auto: '⚡ Tự Động',
+    stopAuto: '⚡ Dừng Auto',
+    skip: '⏩ Bỏ Qua',
+    stopSkip: '⏩ Dừng Skip',
+    menu: '🏠 Menu',
+    hideUI: 'Ẩn UI',
+    clickContinue: 'Click để tiếp tục',
+    choiceHeader: '— Lựa Chọn Của Bạn —',
+    trophyText: (count) => `🏆 Đã mở: ${count}/8 Kết Thúc`,
+    returnTitle: 'Về Màn Hình Chính'
+  },
+  en: {
+    code: 'en',
+    lang: '🌐 EN',
+    langFull: '🌐 English',
+    toastSwitch: '🇬🇧 Switched to English UI',
+    start: 'Start Game',
+    load: 'Load Game',
+    gallery: 'Endings Gallery',
+    music: 'Music Room',
+    settings: 'Settings',
+    backlog: '📜 History',
+    auto: '⚡ Auto',
+    stopAuto: '⚡ Stop Auto',
+    skip: '⏩ Skip',
+    stopSkip: '⏩ Stop Skip',
+    menu: '🏠 Title',
+    hideUI: 'Hide UI',
+    clickContinue: 'Click to continue',
+    choiceHeader: '— Make Your Choice —',
+    trophyText: (count) => `🏆 Unlocked: ${count}/8 Endings`,
+    returnTitle: 'Return to Title'
+  },
+  ja: {
+    code: 'ja',
+    lang: '🌐 JA',
+    langFull: '🌐 日本語',
+    toastSwitch: '🇯🇵 日本語UIに切り替えました',
+    start: 'ゲーム開始',
+    load: 'ロード',
+    gallery: 'エンディング一覧',
+    music: '音楽鑑賞',
+    settings: '設定',
+    backlog: '📜 履歴',
+    auto: '⚡ オート',
+    stopAuto: '⚡ 停止',
+    skip: '⏩ スキップ',
+    stopSkip: '⏩ 停止',
+    menu: '🏠 タイトル',
+    hideUI: 'UI非表示',
+    clickContinue: 'クリックで進む',
+    choiceHeader: '— 選択肢 —',
+    trophyText: (count) => `🏆 解放済み: ${count}/8 エンディング`,
+    returnTitle: 'タイトルへ戻る'
+  }
+};
+
+
 function updateTrophyCount() {
   const count = Object.keys(state.unlockedEndings).length;
   const badgeEl = document.getElementById('title-trophy');
-  if (badgeEl) badgeEl.textContent = `🏆 Đã mở: ${count}/8 Kết Thúc`;
+  const dict = (typeof I18N !== 'undefined' && typeof currentLang !== 'undefined' && I18N[currentLang]) ? I18N[currentLang] : null;
+  if (badgeEl) {
+    badgeEl.textContent = dict && typeof dict.trophyText === 'function' ? dict.trophyText(count) : `🏆 Đã mở: ${count}/8 Kết Thúc`;
+  }
 }
 
 function showGallery() {
@@ -689,11 +882,14 @@ function showGallery() {
 
   endingsMeta.forEach(meta => {
     const isUnlocked = !!state.unlockedEndings[meta.key];
+    const locTitle = getLocalizedEndingTitle(meta.key, meta.title);
+    const locDesc = getLocalizedEndingDesc(meta.key, meta.desc);
+    const lockedPrompt = currentLang === 'ja' ? '異なる選択肢を選んで、このエンディングを解放しましょう。' : (currentLang === 'en' ? 'Try different choices to unlock this ending.' : 'Hãy thử các nhánh lựa chọn khác nhau để khám phá kết thúc này.');
     const row = document.createElement('div');
     row.style.cssText = `background: ${isUnlocked ? 'rgba(147, 51, 234, 0.25)' : 'rgba(20, 10, 35, 0.4)'}; border: 1px solid ${isUnlocked ? '#ec4899' : 'rgba(216,180,254,0.15)'}; border-radius: 12px; padding: 12px 16px;`;
     row.innerHTML = `
-      <div style="font-weight:700; font-size:14.5px; color:${isUnlocked ? '#fbcfe8' : '#6b7280'};">${isUnlocked ? '🔓 ' + meta.title : '🔒 ??? (Chưa mở khóa)'}</div>
-      <div style="font-size:12px; color:${isUnlocked ? '#d8b4fe' : '#4b5563'}; margin-top:4px;">${isUnlocked ? meta.desc : 'Hãy thử các nhánh lựa chọn khác nhau để khám phá kết thúc này.'}</div>
+      <div style="font-weight:700; font-size:14.5px; color:${isUnlocked ? '#fbcfe8' : '#6b7280'};">${isUnlocked ? '🔓 ' + locTitle : '🔒 ??? (' + (currentLang === 'ja' ? '未解放' : (currentLang === 'en' ? 'Locked' : 'Chưa mở khóa')) + ')'}</div>
+      <div style="font-size:12px; color:${isUnlocked ? '#d8b4fe' : '#4b5563'}; margin-top:4px;">${isUnlocked ? locDesc : lockedPrompt}</div>
     `;
     list.appendChild(row);
   });
@@ -726,9 +922,183 @@ try {
 
   const savedCfg = localStorage.getItem('hana_vn_cfg');
   if (savedCfg) Object.assign(state.cfg, JSON.parse(savedCfg));
+
+  const savedLang = localStorage.getItem('hana_vn_lang');
+  if (savedLang && typeof I18N !== 'undefined' && I18N[savedLang]) currentLang = savedLang;
 } catch (e) {}
 
 updateTrophyCount();
+if (typeof applyLanguage === 'function') applyLanguage();
+
+// =============================================
+//  MUSIC ROOM (PHÒNG NGHE NHẠC)
+// =============================================
+
+const MUSIC_TRACKS = [
+  { key: 'spring',   title: '🌸 Haru no Ibuki (Hơi Thở Mùa Xuân)', desc: 'Nhạc nền chủ đề trường Hanazono trong nắng sớm mùa xuân', file: 'assets/audio/bgm/spring.mp3', duration: '03:15' },
+  { key: 'tsundere', title: '⚡ Sunao ni Narenakute (Trái Tim Tsundere)', desc: 'Giai điệu acoustic tinh nghịch & cá tính của Tachibana Rin', file: 'assets/audio/bgm/tsundere.mp3', duration: '02:45' },
+  { key: 'sunset',   title: '❄️ Tasogare no Uta (Khúc Ca Hoàng Hôn)', desc: 'Hòa tấu piano u sầu & lắng đọng nơi sân thượng cùng Aoki Yuki', file: 'assets/audio/bgm/sunset.wav', duration: '00:48' },
+  { key: 'romance',  title: '💖 Sakura no Kiseki (Lời Hẹn Ước Mùa Hoa)', desc: 'Bản tình ca piano cao trào dành cho các phân đoạn True Ending', file: 'assets/audio/bgm/romance.wav', duration: '00:48' },
+];
+
+let musicRoomPlaying = false;
+let musicRoomCurrentKey = null;
+
+function openMusicRoom() {
+  initAudio();
+  sfxClick();
+  const listEl = document.getElementById('music-track-list');
+  listEl.innerHTML = '';
+
+  MUSIC_TRACKS.forEach((track) => {
+    const item = document.createElement('div');
+    item.className = 'slot-item';
+    item.style.cursor = 'pointer';
+    item.innerHTML = `
+      <div style="flex:1;">
+        <div style="font-weight:700; color:#fbcfe8; font-size:14.5px;">${track.title}</div>
+        <div style="font-size:12px; color:#d8b4fe; margin-top:2px;">${track.desc} • <span style="color:#f472b6;">${track.duration}</span></div>
+      </div>
+      <button class="nav-btn" style="padding:6px 16px;" onclick="event.stopPropagation(); playMusicRoomTrack('${track.key}')">▶️ Phát</button>
+    `;
+    item.onclick = () => playMusicRoomTrack(track.key);
+    listEl.appendChild(item);
+  });
+
+  document.getElementById('music-modal').classList.remove('hidden');
+}
+
+function closeMusicRoom() {
+  sfxClick();
+  document.getElementById('music-modal').classList.add('hidden');
+}
+
+function playMusicRoomTrack(key) {
+  musicRoomCurrentKey = key;
+  musicRoomPlaying = true;
+  switchBgm(key);
+
+  const track = MUSIC_TRACKS.find(t => t.key === key);
+  const titleEl = document.getElementById('music-current-title');
+  if (titleEl && track) titleEl.textContent = track.title;
+
+  const btn = document.getElementById('music-play-pause-btn');
+  if (btn) btn.textContent = '⏸️ Tạm Dừng';
+
+  const disc = document.getElementById('vinyl-disc');
+  if (disc) disc.classList.remove('vinyl-paused');
+}
+
+function toggleMusicRoomPlayback() {
+  const btn = document.getElementById('music-play-pause-btn');
+  const disc = document.getElementById('vinyl-disc');
+
+  if (musicRoomPlaying) {
+    if (typeof currentHtmlAudio !== 'undefined' && currentHtmlAudio) {
+      currentHtmlAudio.pause();
+    }
+    musicRoomPlaying = false;
+    if (btn) btn.textContent = '▶️ Tiếp Tục';
+    if (disc) disc.classList.add('vinyl-paused');
+  } else {
+    if (typeof currentHtmlAudio !== 'undefined' && currentHtmlAudio) {
+      currentHtmlAudio.play();
+    } else if (musicRoomCurrentKey) {
+      switchBgm(musicRoomCurrentKey);
+    } else {
+      playMusicRoomTrack('spring');
+    }
+    musicRoomPlaying = true;
+    if (btn) btn.textContent = '⏸️ Tạm Dừng';
+    if (disc) disc.classList.remove('vinyl-paused');
+  }
+}
+
+function toggleLanguage() {
+  initAudio();
+  sfxClick();
+  if (currentLang === 'vi') currentLang = 'en';
+  else if (currentLang === 'en') currentLang = 'ja';
+  else currentLang = 'vi';
+
+  applyLanguage();
+  try {
+    localStorage.setItem('hana_vn_lang', currentLang);
+  } catch (e) {}
+  showToast(I18N[currentLang].toastSwitch);
+}
+
+function applyLanguage() {
+  const dict = I18N[currentLang];
+  
+  const langBtn = document.getElementById('lang-btn');
+  if (langBtn) langBtn.textContent = dict.lang;
+
+  const titleLangBtn = document.getElementById('title-lang-btn');
+  if (titleLangBtn) titleLangBtn.textContent = dict.langFull;
+
+  const txtStart = document.getElementById('txt-start');
+  if (txtStart) txtStart.textContent = dict.start;
+
+  const txtLoad = document.getElementById('txt-load');
+  if (txtLoad) txtLoad.textContent = dict.load;
+
+  const txtGallery = document.getElementById('txt-gallery');
+  if (txtGallery) txtGallery.textContent = dict.gallery;
+
+  const txtMusic = document.getElementById('txt-music');
+  if (txtMusic) txtMusic.textContent = dict.music;
+
+  const txtSettings = document.getElementById('txt-settings');
+  if (txtSettings) txtSettings.textContent = dict.settings;
+
+  const btnAuto = document.getElementById('auto-btn');
+  if (btnAuto) btnAuto.textContent = state.isAuto ? dict.stopAuto : dict.auto;
+
+  const btnSkip = document.getElementById('skip-btn');
+  if (btnSkip) btnSkip.textContent = state.isSkip ? dict.stopSkip : dict.skip;
+
+  const btnBacklog = document.getElementById('nav-backlog');
+  if (btnBacklog) btnBacklog.textContent = dict.backlog;
+
+  const btnSettings = document.getElementById('nav-settings');
+  if (btnSettings) btnSettings.textContent = dict.settings;
+
+  const btnMenu = document.getElementById('nav-menu');
+  if (btnMenu) btnMenu.textContent = dict.menu;
+
+  const promptClick = document.getElementById('txt-prompt-click');
+  if (promptClick) promptClick.textContent = dict.clickContinue;
+
+  const choiceHdr = document.getElementById('txt-choice-header');
+  if (choiceHdr) choiceHdr.textContent = dict.choiceHeader;
+
+  const returnTitle = document.getElementById('txt-return-title');
+  if (returnTitle) returnTitle.textContent = dict.returnTitle;
+
+  const quickHide = document.getElementById('quick-hide-btn');
+  if (quickHide) quickHide.textContent = dict.hideUI;
+
+  updateTrophyCount();
+
+  // If in game, dynamically refresh current dialogue line / choices in the new language!
+  if (document.getElementById('game').style.display !== 'none' && !state.isTyping) {
+    const node = STORY[state.node];
+    if (node) {
+      if (node.choices && !document.getElementById('choices-overlay').classList.contains('hidden')) {
+        showChoices(node.choices);
+      } else if (node.lines && state.lineIndex > 0) {
+        const lineIdx = state.lineIndex - 1;
+        const line = node.lines[lineIdx];
+        if (line) {
+          const char = CHAR_INFO[line.speaker] || CHAR_INFO.narrator;
+          document.getElementById('name-text').textContent = getLocalizedSpeaker(line.speaker, char.name);
+          document.getElementById('dialogue-text').textContent = getLocalizedLineText(state.node, lineIdx, line.text);
+        }
+      }
+    }
+  }
+}
 
 // =============================================
 //  KEYBOARD SHORTCUTS
@@ -744,6 +1114,7 @@ window.addEventListener('keydown', (e) => {
     closeBacklog();
     closeSettings();
     closeGallery();
+    closeMusicRoom();
   } else if (e.key === 'a' || e.key === 'A') {
     if (document.getElementById('game').style.display !== 'none') toggleAuto();
   } else if (e.key === 's' || e.key === 'S') {
@@ -762,4 +1133,3 @@ window.addEventListener('wheel', (e) => {
     }
   }
 });
-</script>
