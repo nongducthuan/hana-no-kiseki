@@ -1,0 +1,29 @@
+{
+  "name": "hana-no-kiseki",
+  "version": "2.0.0",
+  "description": "Hana no Kiseki — Visual Novel Master Edition",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "serve": "npx serve .",
+    "build": "electron-builder"
+  },
+  "keywords": [
+    "visual-novel",
+    "anime",
+    "game",
+    "web-audio"
+  ],
+  "author": "Hana no Kiseki Team",
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "^33.2.0"
+  },
+  "build": {
+    "appId": "com.hananokiseki.game",
+    "productName": "Hana no Kiseki",
+    "win": {
+      "target": "portable"
+    }
+  }
+}
