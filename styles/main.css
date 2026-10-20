@@ -233,7 +233,6 @@
     }
 
     /* ===== DIALOGUE CONTAINER & MASTER TOOLBAR ===== */
-    /* Screen Shake Animation */
     .screen-shake {
       animation: screenShake 0.4s cubic-bezier(.36,.07,.19,.97) both;
     }
@@ -244,7 +243,6 @@
       40%, 60% { transform: translate3d(6px, 0, 0); }
     }
 
-    /* Dialogue Avatar */
     #dialogue-box {
       display: flex;
       align-items: flex-start;
@@ -556,7 +554,6 @@
       box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8), 0 0 30px rgba(168, 85, 247, 0.2);
     }
 
-    /* Save/Load Slot Items */
     .slot-item {
       background: rgba(25, 15, 45, 0.6);
       border: 1px solid rgba(216, 180, 254, 0.2);
@@ -574,7 +571,6 @@
       border-color: rgba(244, 114, 182, 0.5);
     }
 
-    /* Backlog List */
     #backlog-list {
       flex: 1;
       overflow-y: auto;
@@ -604,7 +600,6 @@
       line-height: 1.6;
     }
 
-    /* Settings UI */
     .setting-row {
       display: flex;
       align-items: center;
@@ -713,7 +708,6 @@
       margin-bottom: 26px;
     }
 
-    /* Character Talking / Lip-Sync animation */
     .char-container.talking .char-img {
       animation: charTalk 0.22s ease-in-out infinite alternate !important;
     }
@@ -722,7 +716,6 @@
       100% { transform: translateY(-4px) scaleY(1.008); }
     }
 
-    /* Vinyl spinning for Music Room */
     .vinyl-spinning {
       animation: spinVinyl 4s linear infinite;
     }
@@ -734,7 +727,6 @@
       to { transform: rotate(360deg); }
     }
 
-    /* Toast Notification */
     #toast {
       position: absolute;
       top: 24px;
@@ -758,7 +750,6 @@
       transform: translateX(-50%) translateY(0);
     }
 
-    /* Fade Screen for Scene Transitions */
     #fade-screen {
       position: absolute;
       inset: 0;
@@ -774,7 +765,6 @@
       pointer-events: auto;
     }
 
-    /* Unhide UI Button */
     #unhide-hint {
       position: absolute;
       bottom: 14px;
@@ -794,7 +784,6 @@
    ===================================================== */
 button { touch-action: manipulation; font-family: inherit; }
 
-/* Hộp thoại: cho phép xuống dòng để thanh công cụ nằm dưới chữ (mọi cỡ màn hình nhỏ) */
 @media (max-width: 768px), (max-height: 500px) and (orientation: landscape) {
   #dialogue-box { flex-wrap: wrap; }
   #dialogue-content-area { flex: 1 1 100%; min-width: 0; }
@@ -803,39 +792,51 @@ button { touch-action: manipulation; font-family: inherit; }
 
 /* Điện thoại / máy tính bảng (màn dọc) */
 @media (max-width: 768px) {
-  /* Thanh trên: chỉ giữ điểm thiện cảm + 3 nút cần thiết (Lịch sử/Tự động/Bỏ qua đã có ở thanh dưới) */
   #top-bar {
     top: calc(8px + env(safe-area-inset-top, 0px));
     left: calc(10px + env(safe-area-inset-left, 0px));
     right: calc(10px + env(safe-area-inset-right, 0px));
-    flex-direction: column;
-    align-items: stretch;
-    gap: 6px;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
   }
-  #affection-badge { align-self: flex-start; padding: 4px 12px; gap: 10px; }
-  .aff-pill { font-size: 12px; }
-  .top-bar-interactive { flex-wrap: nowrap; justify-content: flex-end; gap: 6px; }
+  #affection-badge { padding: 4px 10px; gap: 6px; }
+  .aff-pill { font-size: 11px; }
+  .top-bar-interactive { gap: 4px; }
   #nav-backlog, #auto-btn, #skip-btn { display: none; }
-  .nav-btn { font-size: 12px; padding: 6px 12px; min-height: 34px; }
+  .nav-btn { font-size: 11px; padding: 5px 8px; min-height: 30px; }
   .nav-btn:hover { transform: none; }
+
+  /* Tự động ẩn hộp thoại khi hiện bảng lựa chọn để tránh bị đè */
+  #choices-overlay:not(.hidden) ~ #dialogue-layer,
+  #game:has(#choices-overlay:not(.hidden)) #dialogue-layer {
+    opacity: 0 !important;
+    pointer-events: none !important;
+  }
 
   /* Nhân vật */
   .char-container { height: 62vh; height: 62dvh; bottom: 0; }
   .char-container.pos-left  { left: 28%; }
   .char-container.pos-right { left: 72%; }
 
-  /* Hộp thoại: bỏ avatar + dòng "Click để tiếp tục", gọn thanh công cụ */
+  /* Hộp thoại & Avatar */
   #dialogue-layer { width: calc(100% - 16px); bottom: calc(8px + env(safe-area-inset-bottom, 0px)); }
-  #dialogue-box { padding: 22px 16px 10px 16px; gap: 0; border-radius: 18px; }
-  #dialogue-avatar-container { display: none; }
-  #name-tag { top: -36px; left: 0; font-size: 13px; padding: 4px 14px; }
-  #dialogue-text { font-size: 15.5px; line-height: 1.7; min-height: 80px; padding-bottom: 14px; }
+  #dialogue-box { padding: 16px 14px 10px 14px; gap: 0; border-radius: 16px; flex-direction: column; }
+  #dialogue-avatar-container { display: none !important; }
+  #name-tag { top: -14px; left: 14px; font-size: 12px; padding: 3px 12px; }
+  #dialogue-text { font-size: 14.5px; line-height: 1.6; min-height: 54px; padding-bottom: 8px; }
   #dialogue-prompt { right: 2px; bottom: 0; font-size: 12px; }
   #txt-prompt-click { display: none; }
 
-  #quick-toolbar { justify-content: space-between; gap: 6px; margin-top: 6px; padding-top: 8px; }
-  #quick-toolbar .tool-btn:nth-child(-n+2) { display: none; } /* Q.Save, Q.Load (đã có Save/Load) */
-  .tool-btn { flex: 1; font-size: 12.5px; padding: 7px 4px; min-height: 34px; text-align: center; }
+  #quick-toolbar {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 4px;
+    margin-top: 6px;
+    padding-top: 6px;
+    width: 100%;
+  }
+  .tool-btn { font-size: 11px; padding: 5px 0; min-height: 30px; text-align: center; border-radius: 6px; }
 
   /* Banner chương */
   #chapter-banner { padding: 16px 24px; width: 86%; }
@@ -843,9 +844,9 @@ button { touch-action: manipulation; font-family: inherit; }
   #chap-subtitle { font-size: 13px; }
 
   /* Lựa chọn */
-  #choices-overlay { padding: 14px; }
+  #choices-overlay { padding: 16px; justify-content: center; }
   .choice-header { font-size: 14px; margin-bottom: 14px; }
-  .choice-btn { padding: 13px 16px; font-size: 14.5px; }
+  .choice-btn { padding: 12px 14px; font-size: 14px; border-radius: 12px; }
 
   /* Màn hình tiêu đề */
   .title-logo-container { margin-bottom: 24px; padding: 0 12px; }
@@ -856,7 +857,7 @@ button { touch-action: manipulation; font-family: inherit; }
   .title-btn { font-size: 15px; padding: 12px 16px; }
   #title-trophy { bottom: calc(14px + env(safe-area-inset-bottom, 0px)) !important; }
 
-  /* Modal: ghi đè width inline */
+  /* Modal */
   .modal-box {
     width: 94% !important;
     max-width: 94% !important;
