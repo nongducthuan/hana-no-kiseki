@@ -1,22 +1,22 @@
 const ASSETS = {
   bg: {
-    classroom:       'assets/bg/classroom.png',
-    rooftop:         'assets/bg/rooftop_sunset.png',
+    classroom:       'assets/bg/classroom.webp',
+    rooftop:         'assets/bg/rooftop_sunset.webp',
     corridor:        'assets/bg/corridor.jpg',
-    sakura:          'assets/bg/school_gate.png',
-    student_council: 'assets/bg/student_council.png',
+    sakura:          'assets/bg/school_gate.webp',
+    student_council: 'assets/bg/student_council.webp',
   },
   char: {
-    hana_normal: 'assets/char/hana_normal.png',
-    hana_smile:  'assets/char/hana_smile.png',
-    hana_sad:    'assets/char/hana_sad.png',
-    hana_blush:  'assets/char/hana_blush.png',
-    yuki_normal: 'assets/char/yuki_normal.png',
-    yuki_smile:  'assets/char/yuki_smile.png',
-    yuki_sad:    'assets/char/yuki_sad.png',
-    rin_normal:  'assets/char/rin_normal.png',
-    rin_smile:   'assets/char/rin_smile.png',
-    rin_blush:   'assets/char/rin_blush.png',
+    hana_normal: 'assets/char/hana_normal.webp',
+    hana_smile:  'assets/char/hana_smile.webp',
+    hana_sad:    'assets/char/hana_sad.webp',
+    hana_blush:  'assets/char/hana_blush.webp',
+    yuki_normal: 'assets/char/yuki_normal.webp',
+    yuki_smile:  'assets/char/yuki_smile.webp',
+    yuki_sad:    'assets/char/yuki_sad.webp',
+    rin_normal:  'assets/char/rin_normal.webp',
+    rin_smile:   'assets/char/rin_smile.webp',
+    rin_blush:   'assets/char/rin_blush.webp',
   }
 };
 

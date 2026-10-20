@@ -13,9 +13,9 @@ let synthTimer = null;
 // Map themes to real audio files
 const BGM_TRACKS = {
   spring:   'assets/audio/bgm/spring.mp3',
-  sunset:   'assets/audio/bgm/sunset.wav',
+  sunset:   'assets/audio/bgm/sunset.mp3',
   tsundere: 'assets/audio/bgm/tsundere.mp3',
-  romance:  'assets/audio/bgm/romance.wav'
+  romance:  'assets/audio/bgm/romance.mp3'
 };
 
 function initAudio() {

@@ -2,12 +2,12 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#080614" />
   <title>Hana no Kiseki — Visual Novel Master Edition</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;700;800&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
-  <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
   <link rel="stylesheet" href="styles/main.css">
 </head>
 <body>
@@ -15,7 +15,7 @@
 <canvas id="sakura-canvas"></canvas>
 
 <!-- ===== TITLE SCREEN ===== -->
-<div id="title-screen" style="background-image: url('assets/bg/school_gate.png');">
+<div id="title-screen" style="background-image: url('assets/bg/school_gate.webp');">
   <div style="position: absolute; top: 20px; right: 24px; z-index: 110;">
     <button class="nav-btn" onclick="toggleLanguage()" id="title-lang-btn">🌐 Tiếng Việt</button>
   </div>
@@ -91,17 +91,17 @@
     <div id="character-layer">
       <!-- Hana Sprite -->
       <div class="char-container hidden pos-center" id="char-hana">
-        <img src="assets/char/hana_normal.png" class="char-img" id="img-hana" alt="Hana">
+        <img src="assets/char/hana_normal.webp" class="char-img" id="img-hana" alt="Hana">
       </div>
 
       <!-- Yuki Sprite -->
       <div class="char-container hidden pos-center" id="char-yuki">
-        <img src="assets/char/yuki_normal.png" class="char-img" id="img-yuki" alt="Yuki">
+        <img src="assets/char/yuki_normal.webp" class="char-img" id="img-yuki" alt="Yuki">
       </div>
 
       <!-- Rin Sprite -->
       <div class="char-container hidden pos-center" id="char-rin">
-        <img src="assets/char/rin_normal.png" class="char-img" id="img-rin" alt="Rin">
+        <img src="assets/char/rin_normal.webp" class="char-img" id="img-rin" alt="Rin">
       </div>
     </div>
 
@@ -156,7 +156,7 @@
 <div id="ending-screen">
   <div id="ending-bg-layer"></div>
   <div id="ending-char-showcase">
-    <img id="ending-char-img" src="assets/char/hana_blush.png" alt="Ending Heroine">
+    <img id="ending-char-img" src="assets/char/hana_blush.webp" alt="Ending Heroine">
   </div>
   <div id="ending-card">
     <div class="ending-badge" id="ending-badge">🌸</div>

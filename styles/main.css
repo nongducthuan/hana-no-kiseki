@@ -9,9 +9,12 @@
       background: #080614;
       color: #fff;
       height: 100vh;
+      height: 100dvh;
       width: 100vw;
       overflow: hidden;
       user-select: none;
+      -webkit-tap-highlight-color: transparent;
+      -webkit-text-size-adjust: 100%;
     }
 
     /* ===== CANVAS SAKURA PETALS ===== */
@@ -26,6 +29,7 @@
     #game {
       width: 100vw;
       height: 100vh;
+      height: 100dvh;
       position: relative;
       display: flex;
       flex-direction: column;
@@ -783,3 +787,180 @@
       padding: 4px 10px;
       border-radius: 6px;
     }
+
+
+/* =====================================================
+   MOBILE / RESPONSIVE
+   ===================================================== */
+button { touch-action: manipulation; font-family: inherit; }
+
+/* Máy tính bảng & điện thoại (màn dọc) */
+@media (max-width: 768px) {
+  #top-bar {
+    top: calc(8px + env(safe-area-inset-top, 0px));
+    left: calc(10px + env(safe-area-inset-left, 0px));
+    right: calc(10px + env(safe-area-inset-right, 0px));
+    flex-direction: column;
+    align-items: stretch;
+    gap: 6px;
+  }
+  #affection-badge {
+    align-self: flex-start;
+    padding: 4px 12px;
+    gap: 10px;
+  }
+  .aff-pill { font-size: 12px; }
+  .top-bar-interactive {
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 5px;
+  }
+  .nav-btn { font-size: 11.5px; padding: 6px 10px; min-height: 32px; }
+  .nav-btn:hover { transform: none; }
+
+  /* Nhân vật */
+  .char-container { height: 62vh; height: 62dvh; bottom: 0; }
+  .char-container.pos-left  { left: 28%; }
+  .char-container.pos-right { left: 72%; }
+
+  /* Hộp thoại */
+  #dialogue-layer {
+    width: calc(100% - 16px);
+    bottom: calc(8px + env(safe-area-inset-bottom, 0px));
+  }
+  #dialogue-box {
+    padding: 20px 16px 10px 16px;
+    gap: 12px;
+    border-radius: 18px;
+  }
+  #dialogue-avatar-container {
+    width: 52px; height: 52px; min-width: 52px;
+    border-radius: 14px;
+  }
+  #name-tag { top: -16px; left: 16px; font-size: 13px; padding: 4px 14px; }
+  #dialogue-text { font-size: 15px; line-height: 1.7; min-height: 78px; }
+  #dialogue-prompt { right: 14px; bottom: 6px; font-size: 12px; }
+
+  #quick-toolbar {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 6px;
+  }
+  .tool-btn { font-size: 12px; padding: 6px 10px; min-height: 30px; }
+
+  /* Banner chương */
+  #chapter-banner { padding: 16px 24px; width: 86%; }
+  #chap-title { font-size: 19px; }
+  #chap-subtitle { font-size: 13px; }
+
+  /* Lựa chọn */
+  #choices-overlay { padding: 14px; }
+  .choice-header { font-size: 14px; margin-bottom: 14px; }
+  .choice-btn { padding: 13px 16px; font-size: 14.5px; }
+
+  /* Màn hình tiêu đề */
+  .title-logo-container { margin-bottom: 24px; padding: 0 12px; }
+  .jp-title { font-size: 15px; }
+  .main-title { font-size: 38px; }
+  .romaji-title { font-size: 13px; letter-spacing: 0.05em; }
+  .title-menu { width: min(280px, 82vw); gap: 10px; }
+  .title-btn { font-size: 15px; padding: 12px 16px; }
+  #title-trophy { bottom: calc(14px + env(safe-area-inset-bottom, 0px)) !important; }
+
+  /* Modal: ghi đè width inline */
+  .modal-box {
+    width: 94% !important;
+    max-width: 94% !important;
+    padding: 18px 16px;
+    border-radius: 18px;
+    max-height: 88vh;
+    max-height: 88dvh;
+  }
+  #backlog-modal .modal-box { height: 82vh !important; height: 82dvh !important; }
+  .setting-row { flex-direction: column; align-items: flex-start; gap: 6px; margin-bottom: 14px; font-size: 14px; }
+  .slider-input { width: 100%; }
+  .slot-item { padding: 10px 12px; gap: 8px; }
+
+  /* Màn hình kết thúc */
+  #ending-screen {
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 12px;
+    gap: 0;
+    overflow-y: auto;
+  }
+  #ending-char-showcase { height: 38vh; height: 38dvh; position: absolute; top: 4%; left: 50%; transform: none; animation: none; translate: -50% 0; }
+  #ending-card { padding: 20px 18px; max-width: 100%; width: 100%; border-radius: 20px; }
+  .ending-badge { font-size: 34px; }
+  .ending-title { font-size: 24px; }
+  .ending-desc { font-size: 14.5px; margin-bottom: 16px; }
+
+  #unhide-hint { right: 10px; bottom: calc(10px + env(safe-area-inset-bottom, 0px)); font-size: 11px; }
+}
+
+/* Điện thoại rất nhỏ */
+@media (max-width: 380px) {
+  .main-title { font-size: 32px; }
+  .nav-btn { font-size: 11px; padding: 5px 8px; }
+  #dialogue-text { font-size: 14.5px; }
+}
+
+/* Điện thoại xoay ngang (màn hình thấp) */
+@media (max-height: 500px) and (orientation: landscape) {
+  #top-bar {
+    top: calc(4px + env(safe-area-inset-top, 0px));
+    flex-direction: row;
+    align-items: center;
+    left: calc(8px + env(safe-area-inset-left, 0px));
+    right: calc(8px + env(safe-area-inset-right, 0px));
+  }
+  #affection-badge { padding: 3px 10px; gap: 8px; }
+  .aff-pill { font-size: 11px; }
+  .top-bar-interactive { flex-wrap: nowrap; gap: 4px; }
+  .nav-btn { font-size: 11px; padding: 4px 9px; min-height: 28px; }
+
+  .char-container { height: 78vh; height: 78dvh; }
+  .char-container.pos-left  { left: 20%; }
+  .char-container.pos-right { left: 80%; }
+
+  #dialogue-layer {
+    width: calc(100% - 24px - env(safe-area-inset-left, 0px) - env(safe-area-inset-right, 0px));
+    max-width: 900px;
+    bottom: calc(4px + env(safe-area-inset-bottom, 0px));
+  }
+  #dialogue-box { padding: 14px 14px 6px 14px; border-radius: 14px; }
+  #dialogue-avatar-container { display: none; }
+  #name-tag { top: -13px; font-size: 12px; padding: 3px 12px; }
+  #dialogue-text { font-size: 14px; line-height: 1.5; min-height: 44px; }
+  #dialogue-prompt { display: none; }
+  #quick-toolbar { margin-top: 4px; padding-top: 4px; flex-wrap: nowrap; }
+  .tool-btn { font-size: 11px; padding: 3px 8px; min-height: 24px; }
+
+  #chapter-banner { padding: 10px 24px; top: 40%; }
+  #chap-title { font-size: 16px; }
+
+  #choices-overlay { padding: 8px; }
+  .choice-header { margin-bottom: 8px; font-size: 13px; }
+  #choices-container { gap: 6px !important; }
+  .choice-btn { padding: 8px 14px; font-size: 13.5px; }
+
+  .title-logo-container { margin-bottom: 10px; }
+  .main-title { font-size: 32px; }
+  .jp-title { font-size: 12px; }
+  .romaji-title { font-size: 11px; }
+  .title-menu { flex-direction: row; flex-wrap: wrap; justify-content: center; width: 92vw; gap: 6px; }
+  .title-btn { font-size: 12.5px; padding: 7px 14px; width: auto; }
+  #title-trophy { display: none; }
+
+  .modal-box { max-height: 94vh; max-height: 94dvh; padding: 12px 16px; }
+  #backlog-modal .modal-box { height: 92vh !important; height: 92dvh !important; }
+  .setting-row { flex-direction: row; align-items: center; margin-bottom: 8px; }
+  .slider-input { width: 40%; }
+
+  #ending-screen { flex-direction: row; justify-content: center; align-items: center; overflow: hidden; gap: 14px; }
+  #ending-char-showcase { position: relative; top: auto; left: auto; translate: none; height: 80vh; height: 80dvh; }
+  #ending-card { padding: 14px 18px; width: auto; max-width: 55%; }
+  .ending-title { font-size: 20px; margin-bottom: 6px; }
+  .ending-desc { font-size: 12.5px; line-height: 1.5; margin-bottom: 10px; }
+  .ending-badge { font-size: 26px; margin-bottom: 4px; }
+}

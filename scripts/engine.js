@@ -738,17 +738,17 @@ function showEnding(node) {
 
   // Showcase heroine sprite and background
   const showcaseMap = {
-    hana_good:   { sprite: 'assets/char/hana_blush.png', bg: 'assets/bg/school_gate.png', bgm: 'romance' },
-    hana_normal: { sprite: 'assets/char/hana_smile.png', bg: 'assets/bg/classroom.png', bgm: 'spring' },
-    yuki_good:   { sprite: 'assets/char/yuki_smile.png', bg: 'assets/bg/rooftop_sunset.png', bgm: 'romance' },
-    yuki_normal: { sprite: 'assets/char/yuki_normal.png', bg: 'assets/bg/rooftop_sunset.png', bgm: 'sunset' },
-    rin_good:    { sprite: 'assets/char/rin_blush.png', bg: 'assets/bg/student_council.png', bgm: 'romance' },
-    rin_normal:  { sprite: 'assets/char/rin_smile.png', bg: 'assets/bg/student_council.png', bgm: 'tsundere' },
-    harem:       { sprite: 'assets/char/hana_smile.png', bg: 'assets/bg/school_gate.png', bgm: 'spring' },
+    hana_good:   { sprite: 'assets/char/hana_blush.webp', bg: 'assets/bg/school_gate.webp', bgm: 'romance' },
+    hana_normal: { sprite: 'assets/char/hana_smile.webp', bg: 'assets/bg/classroom.webp', bgm: 'spring' },
+    yuki_good:   { sprite: 'assets/char/yuki_smile.webp', bg: 'assets/bg/rooftop_sunset.webp', bgm: 'romance' },
+    yuki_normal: { sprite: 'assets/char/yuki_normal.webp', bg: 'assets/bg/rooftop_sunset.webp', bgm: 'sunset' },
+    rin_good:    { sprite: 'assets/char/rin_blush.webp', bg: 'assets/bg/student_council.webp', bgm: 'romance' },
+    rin_normal:  { sprite: 'assets/char/rin_smile.webp', bg: 'assets/bg/student_council.webp', bgm: 'tsundere' },
+    harem:       { sprite: 'assets/char/hana_smile.webp', bg: 'assets/bg/school_gate.webp', bgm: 'spring' },
     alone:       { sprite: null, bg: 'assets/bg/corridor.jpg', bgm: 'sunset' }
   };
 
-  const meta = showcaseMap[node.endingKey] || { sprite: 'assets/char/hana_smile.png', bg: 'assets/bg/school_gate.png', bgm: 'romance' };
+  const meta = showcaseMap[node.endingKey] || { sprite: 'assets/char/hana_smile.webp', bg: 'assets/bg/school_gate.webp', bgm: 'romance' };
   
   if (meta.bgm && typeof switchBgm === 'function') {
     switchBgm(meta.bgm);
@@ -937,8 +937,8 @@ if (typeof applyLanguage === 'function') applyLanguage();
 const MUSIC_TRACKS = [
   { key: 'spring',   title: '🌸 Haru no Ibuki (Hơi Thở Mùa Xuân)', desc: 'Nhạc nền chủ đề trường Hanazono trong nắng sớm mùa xuân', file: 'assets/audio/bgm/spring.mp3', duration: '03:15' },
   { key: 'tsundere', title: '⚡ Sunao ni Narenakute (Trái Tim Tsundere)', desc: 'Giai điệu acoustic tinh nghịch & cá tính của Tachibana Rin', file: 'assets/audio/bgm/tsundere.mp3', duration: '02:45' },
-  { key: 'sunset',   title: '❄️ Tasogare no Uta (Khúc Ca Hoàng Hôn)', desc: 'Hòa tấu piano u sầu & lắng đọng nơi sân thượng cùng Aoki Yuki', file: 'assets/audio/bgm/sunset.wav', duration: '00:48' },
-  { key: 'romance',  title: '💖 Sakura no Kiseki (Lời Hẹn Ước Mùa Hoa)', desc: 'Bản tình ca piano cao trào dành cho các phân đoạn True Ending', file: 'assets/audio/bgm/romance.wav', duration: '00:48' },
+  { key: 'sunset',   title: '❄️ Tasogare no Uta (Khúc Ca Hoàng Hôn)', desc: 'Hòa tấu piano u sầu & lắng đọng nơi sân thượng cùng Aoki Yuki', file: 'assets/audio/bgm/sunset.mp3', duration: '00:48' },
+  { key: 'romance',  title: '💖 Sakura no Kiseki (Lời Hẹn Ước Mùa Hoa)', desc: 'Bản tình ca piano cao trào dành cho các phân đoạn True Ending', file: 'assets/audio/bgm/romance.mp3', duration: '00:48' },
 ];
 
 let musicRoomPlaying = false;
@@ -1133,3 +1133,64 @@ window.addEventListener('wheel', (e) => {
     }
   }
 });
+
+
+// =============================================
+//  MOBILE / TOUCH SUPPORT
+// =============================================
+(function setupTouch() {
+  const isTouch = window.matchMedia('(pointer: coarse)').matches || 'ontouchstart' in window;
+  if (!isTouch) return;
+
+  const scene = document.getElementById('scene');
+  const hint = document.getElementById('unhide-hint');
+  const gameEl = document.getElementById('game');
+  const inGame = () => gameEl.style.display !== 'none';
+  let lastTouchAction = 0;
+
+  // Chặn contextmenu (chuột phải mô phỏng) trùng với nhấn giữ để tránh bật/tắt UI 2 lần
+  document.addEventListener('contextmenu', (e) => {
+    if (Date.now() - lastTouchAction < 1000) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+  }, true);
+
+  if (hint) hint.textContent = 'Chạm vào màn hình để hiện UI';
+
+  let startX = 0, startY = 0, startT = 0, pressTimer = null, moved = false;
+
+  scene.addEventListener('touchstart', (e) => {
+    if (e.touches.length !== 1) return;
+    if (e.target.closest('#choices-overlay:not(.hidden)')) return;
+    const t = e.touches[0];
+    startX = t.clientX; startY = t.clientY; startT = Date.now(); moved = false;
+    clearTimeout(pressTimer);
+    // Nhấn giữ ~0.6s để ẩn UI
+    pressTimer = setTimeout(() => {
+      if (!moved && inGame() && !state.isUIHidden) {
+        lastTouchAction = Date.now();
+        toggleHideUI();
+      }
+    }, 600);
+  }, { passive: true });
+
+  scene.addEventListener('touchmove', (e) => {
+    const t = e.touches[0];
+    if (Math.abs(t.clientX - startX) > 10 || Math.abs(t.clientY - startY) > 10) {
+      moved = true;
+      clearTimeout(pressTimer);
+    }
+  }, { passive: true });
+
+  scene.addEventListener('touchend', (e) => {
+    clearTimeout(pressTimer);
+    const t = e.changedTouches[0];
+    const dy = t.clientY - startY;
+    const dx = Math.abs(t.clientX - startX);
+    // Vuốt xuống trên cảnh để mở Lịch Sử
+    if (inGame() && !state.isUIHidden && dy > 90 && dx < 60 && Date.now() - startT < 600) {
+      if (!document.querySelector('#choices-overlay:not(.hidden)')) openBacklog();
+    }
+  }, { passive: true });
+})();
