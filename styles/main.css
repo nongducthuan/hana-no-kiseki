@@ -794,8 +794,16 @@
    ===================================================== */
 button { touch-action: manipulation; font-family: inherit; }
 
-/* Máy tính bảng & điện thoại (màn dọc) */
+/* Hộp thoại: cho phép xuống dòng để thanh công cụ nằm dưới chữ (mọi cỡ màn hình nhỏ) */
+@media (max-width: 768px), (max-height: 500px) and (orientation: landscape) {
+  #dialogue-box { flex-wrap: wrap; }
+  #dialogue-content-area { flex: 1 1 100%; min-width: 0; }
+  #quick-toolbar { flex: 1 1 100%; }
+}
+
+/* Điện thoại / máy tính bảng (màn dọc) */
 @media (max-width: 768px) {
+  /* Thanh trên: chỉ giữ điểm thiện cảm + 3 nút cần thiết (Lịch sử/Tự động/Bỏ qua đã có ở thanh dưới) */
   #top-bar {
     top: calc(8px + env(safe-area-inset-top, 0px));
     left: calc(10px + env(safe-area-inset-left, 0px));
@@ -804,18 +812,11 @@ button { touch-action: manipulation; font-family: inherit; }
     align-items: stretch;
     gap: 6px;
   }
-  #affection-badge {
-    align-self: flex-start;
-    padding: 4px 12px;
-    gap: 10px;
-  }
+  #affection-badge { align-self: flex-start; padding: 4px 12px; gap: 10px; }
   .aff-pill { font-size: 12px; }
-  .top-bar-interactive {
-    flex-wrap: wrap;
-    justify-content: flex-end;
-    gap: 5px;
-  }
-  .nav-btn { font-size: 11.5px; padding: 6px 10px; min-height: 32px; }
+  .top-bar-interactive { flex-wrap: nowrap; justify-content: flex-end; gap: 6px; }
+  #nav-backlog, #auto-btn, #skip-btn { display: none; }
+  .nav-btn { font-size: 12px; padding: 6px 12px; min-height: 34px; }
   .nav-btn:hover { transform: none; }
 
   /* Nhân vật */
@@ -823,30 +824,18 @@ button { touch-action: manipulation; font-family: inherit; }
   .char-container.pos-left  { left: 28%; }
   .char-container.pos-right { left: 72%; }
 
-  /* Hộp thoại */
-  #dialogue-layer {
-    width: calc(100% - 16px);
-    bottom: calc(8px + env(safe-area-inset-bottom, 0px));
-  }
-  #dialogue-box {
-    padding: 20px 16px 10px 16px;
-    gap: 12px;
-    border-radius: 18px;
-  }
-  #dialogue-avatar-container {
-    width: 52px; height: 52px; min-width: 52px;
-    border-radius: 14px;
-  }
-  #name-tag { top: -16px; left: 16px; font-size: 13px; padding: 4px 14px; }
-  #dialogue-text { font-size: 15px; line-height: 1.7; min-height: 78px; }
-  #dialogue-prompt { right: 14px; bottom: 6px; font-size: 12px; }
+  /* Hộp thoại: bỏ avatar + dòng "Click để tiếp tục", gọn thanh công cụ */
+  #dialogue-layer { width: calc(100% - 16px); bottom: calc(8px + env(safe-area-inset-bottom, 0px)); }
+  #dialogue-box { padding: 22px 16px 10px 16px; gap: 0; border-radius: 18px; }
+  #dialogue-avatar-container { display: none; }
+  #name-tag { top: -36px; left: 0; font-size: 13px; padding: 4px 14px; }
+  #dialogue-text { font-size: 15.5px; line-height: 1.7; min-height: 80px; padding-bottom: 14px; }
+  #dialogue-prompt { right: 2px; bottom: 0; font-size: 12px; }
+  #txt-prompt-click { display: none; }
 
-  #quick-toolbar {
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 6px;
-  }
-  .tool-btn { font-size: 12px; padding: 6px 10px; min-height: 30px; }
+  #quick-toolbar { justify-content: space-between; gap: 6px; margin-top: 6px; padding-top: 8px; }
+  #quick-toolbar .tool-btn:nth-child(-n+2) { display: none; } /* Q.Save, Q.Load (đã có Save/Load) */
+  .tool-btn { flex: 1; font-size: 12.5px; padding: 7px 4px; min-height: 34px; text-align: center; }
 
   /* Banner chương */
   #chapter-banner { padding: 16px 24px; width: 86%; }
@@ -882,13 +871,7 @@ button { touch-action: manipulation; font-family: inherit; }
   .slot-item { padding: 10px 12px; gap: 8px; }
 
   /* Màn hình kết thúc */
-  #ending-screen {
-    flex-direction: column;
-    justify-content: flex-end;
-    padding: 12px;
-    gap: 0;
-    overflow-y: auto;
-  }
+  #ending-screen { flex-direction: column; justify-content: flex-end; padding: 12px; gap: 0; overflow-y: auto; }
   #ending-char-showcase { height: 38vh; height: 38dvh; position: absolute; top: 4%; left: 50%; transform: none; animation: none; translate: -50% 0; }
   #ending-card { padding: 20px 18px; max-width: 100%; width: 100%; border-radius: 20px; }
   .ending-badge { font-size: 34px; }
@@ -901,8 +884,8 @@ button { touch-action: manipulation; font-family: inherit; }
 /* Điện thoại rất nhỏ */
 @media (max-width: 380px) {
   .main-title { font-size: 32px; }
-  .nav-btn { font-size: 11px; padding: 5px 8px; }
-  #dialogue-text { font-size: 14.5px; }
+  .nav-btn { font-size: 11.5px; padding: 5px 9px; }
+  #dialogue-text { font-size: 15px; }
 }
 
 /* Điện thoại xoay ngang (màn hình thấp) */
@@ -917,6 +900,7 @@ button { touch-action: manipulation; font-family: inherit; }
   #affection-badge { padding: 3px 10px; gap: 8px; }
   .aff-pill { font-size: 11px; }
   .top-bar-interactive { flex-wrap: nowrap; gap: 4px; }
+  #nav-backlog, #auto-btn, #skip-btn { display: none; }
   .nav-btn { font-size: 11px; padding: 4px 9px; min-height: 28px; }
 
   .char-container { height: 78vh; height: 78dvh; }
@@ -928,13 +912,14 @@ button { touch-action: manipulation; font-family: inherit; }
     max-width: 900px;
     bottom: calc(4px + env(safe-area-inset-bottom, 0px));
   }
-  #dialogue-box { padding: 14px 14px 6px 14px; border-radius: 14px; }
+  #dialogue-box { padding: 16px 14px 6px 14px; border-radius: 14px; gap: 0; }
   #dialogue-avatar-container { display: none; }
-  #name-tag { top: -13px; font-size: 12px; padding: 3px 12px; }
-  #dialogue-text { font-size: 14px; line-height: 1.5; min-height: 44px; }
+  #name-tag { top: -30px; left: 0; font-size: 12px; padding: 3px 12px; }
+  #dialogue-text { font-size: 14px; line-height: 1.5; min-height: 42px; }
   #dialogue-prompt { display: none; }
-  #quick-toolbar { margin-top: 4px; padding-top: 4px; flex-wrap: nowrap; }
-  .tool-btn { font-size: 11px; padding: 3px 8px; min-height: 24px; }
+  #quick-toolbar { margin-top: 4px; padding-top: 4px; flex-wrap: nowrap; justify-content: flex-end; }
+  #quick-toolbar .tool-btn:nth-child(-n+2) { display: none; }
+  .tool-btn { font-size: 11px; padding: 3px 10px; min-height: 24px; }
 
   #chapter-banner { padding: 10px 24px; top: 40%; }
   #chap-title { font-size: 16px; }
